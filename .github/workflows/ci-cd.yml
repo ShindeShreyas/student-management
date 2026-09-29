@@ -31,7 +31,7 @@ jobs:
           aws-region: us-west-2
 
       - name: Push Artifacts to S3
-        run: aws s3 cp target/*.war s3://mayur.comm/Artifacts/student.war
+        run: aws s3 cp target/*.war s3://shreyasbuilds.fun/Artifacts/student.war
 
       - name: SonarQube Analysis
         env:
@@ -72,9 +72,9 @@ jobs:
 
       - name: Push Image to ECR 
         run: |
-          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 822920903800.dkr.ecr.us-west-2.amazonaws.com
-          docker tag student:latest 822920903800.dkr.ecr.us-west-2.amazonaws.com/student:latest
-          docker push 822920903800.dkr.ecr.us-west-2.amazonaws.com/student:latest
+          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 963540391051.dkr.ecr.ap-south-1.amazonaws.com
+          docker tag student:latest 963540391051.dkr.ecr.ap-south-1.amazonaws.com/student:latest
+          docker push 963540391051.dkr.ecr.ap-south-1.amazonaws.com/student:latest
 
       - name: Terraform Installation
         uses: hashicorp/setup-terraform@v4
@@ -95,7 +95,7 @@ jobs:
 
       - name: Deployment on Kubernetes
         run: |
-          aws eks update-kubeconfig --name eks-cluster-mayur --region us-west-2
+          aws eks update-kubeconfig --name eks  --region ap-south-1
           kubectl apply -f k8s/
           sleep 30
           kubectl get pods
