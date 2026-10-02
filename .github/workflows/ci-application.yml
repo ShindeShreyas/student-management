@@ -55,7 +55,7 @@ jobs:
           [ "$STATUS" = "OK" ] || exit 1
 
       - name: artifact-to-s3
-        run: aws s3 cp target/*.war s3://shreyasbuilds.fun/new-student-artifact/student.war
+        run: aws s3 cp target/*.war s3://shreyasbuilds.fun/new-student-artifact/student.war # bucket
 
       - name: docker-images-build
         run: |
