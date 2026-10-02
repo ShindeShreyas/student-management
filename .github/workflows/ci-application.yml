@@ -1,0 +1,78 @@
+name: ci-application
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  ci-application:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v7
+
+      - name: java-env-setup
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: maven-build
+        run: mvn clean package
+
+      - name: aws-credentials-setup
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: sonarqube-scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}\
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          mvn sonar:sonar \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN
+
+      - name: sonarqube-quality-gate
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # or https://sonarcloud.io
+        run: |
+          STATUS=$(curl -s \
+            -u "$SONAR_TOKEN:" \
+            "$SONAR_HOST_URL/api/qualitygates/project_status?projectKey=student-management" \
+            | jq -r '.projectStatus.status')
+          echo "SonarQube Quality Gate: $STATUS"
+
+          echo "Quality Gate: $STATUS"
+          [ "$STATUS" = "OK" ] || exit 1
+
+      - name: artifact-to-s3
+        run: aws s3 cp target/*.war s3://shreyasbuilds.fun/new-student-artifact/student.war
+
+      - name: docker-images-build
+        run: |
+          docker images -t student .
+          docker images
+
+      - name: push-to-ecr
+        run: |
+          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 963540391051.dkr.ecr.ap-south-1.amazonaws.com
+          docker tag student:latest 963540391051.dkr.ecr.ap-south-1.amazonaws.com/student:${{ github.sha }}
+          docker push 963540391051.dkr.ecr.ap-south-1.amazonaws.com/student:${{ github.sha }}
+
+      - name: image-update
+        run: |
+          sed -i "s|image: .*|image: 963540391051.dkr.ecr.ap-south-1.amazonaws.com/student:${{ github.sha }}|" k8s/deployment.yaml
+           git config --global user.name "jr. Devops Engineer Shreyas"
+          git config --global user.email "shindeshreyas0211@gmail.com"
+          git add k8s/deployment.yaml
+          git commit -m "image updated"
+          git push origin master
