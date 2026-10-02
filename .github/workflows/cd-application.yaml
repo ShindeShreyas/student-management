@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: AWS Credentials Setup
-        uses: aws-actions/configure-aws-credentials@v6
+        uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -35,7 +35,7 @@ jobs:
       - name: Verify EKS Cluster
         run: |
           aws eks describe-cluster \
-            --name my-eks \
+            --name eks-cluster \
             --region ap-south-1 \
             --query 'cluster.status' \
             --output text
@@ -43,7 +43,7 @@ jobs:
       - name: EKS Cluster Access
         run: |
           aws eks update-kubeconfig \
-            --name my-eks \
+            --name eks-cluster \
             --region ap-south-1
 
       - name: Check Kubernetes
