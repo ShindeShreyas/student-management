@@ -1,58 +1,31 @@
-name: cd-application
-
+name:  cd-application
 on:
   workflow_run:
     workflows:
-      - ci-application
+      - ci
     types:
       - completed
-
 jobs:
   cd-application:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+       - name: aws-credentials-setup
+         uses:  aws-actions/configure-aws-credentials@v6.3.0
+         with:
+           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+           aws-region: ap-south-1
+        
+       - name: checkout
+         uses: actions/checkout@v7
 
-      - name: AWS Credentials Setup
-        uses: aws-actions/configure-aws-credentials@v6.3.0
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+       - name: eks-cluster-access
+         run: aws eks update-kubeconfig --name eks-cluster --region ap-south-1
 
-      - name: Check AWS Account
-        run: |
-          aws sts get-caller-identity
+       - name: kubernets-files-apply
+         run: kubectl apply -f k8s/
 
-      - name: Check EKS Clusters
-        run: |
-          aws eks list-clusters \
-            --region ap-south-1
-
-      - name: Verify EKS Cluster
-        run: |
-          aws eks describe-cluster \
-            --name eks-cluster \
-            --region ap-south-1 \
-            --query 'cluster.status' \
-            --output text
-
-      - name: EKS Cluster Access
-        run: |
-          aws eks update-kubeconfig \
-            --name eks-cluster \
-            --region ap-south-1
-
-      - name: Check Kubernetes
-        run: |
-          kubectl get nodes
-
-      - name: Kubernetes Files Apply
-        run: |
-          kubectl apply -f k8s/
 
 
 

@@ -46,7 +46,7 @@ jobs:
       - name: Verify EKS Cluster
         run: |
           aws eks describe-cluster \
-            --name my-eks \
+            --name eks-cluster \
             --region ap-south-1 \
             --query 'cluster.status' \
             --output text
