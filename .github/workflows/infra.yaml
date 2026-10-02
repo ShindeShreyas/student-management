@@ -30,9 +30,10 @@ jobs:
       - name: Check AWS Account
         run: |
           aws sts get-caller-identity
+          echo "AWS Region: $AWS_REGION"
 
       - name: Terraform Init
-        run: terraform init #3
+        run: terraform init
 
       - name: Terraform Validate
         run: terraform validate
@@ -41,13 +42,12 @@ jobs:
         run: terraform plan
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve   # bucket
+        run: terraform apply -auto-approve
 
-      - name: Verify EKS Cluster
+      - name: List EKS Clusters
         run: |
-          aws eks describe-cluster \
-            --name my-eks-cluster \
+          echo "EKS clusters in ap-south-1:"
+          aws eks list-clusters \
             --region ap-south-1 \
-            --query 'cluster.status' \
-            --output text             
+            --output table
 
