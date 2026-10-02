@@ -30,7 +30,7 @@ data "aws_vpc" "default" {
 # Variable for cluster name
 variable "cluster_name" {
   type    = string
-  default = "eks"
+  default = "my-eks"
 }
 
 # Fetch all subnets in the default VPC
