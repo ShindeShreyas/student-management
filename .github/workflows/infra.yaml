@@ -32,7 +32,7 @@ jobs:
           aws sts get-caller-identity
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init #3
 
       - name: Terraform Validate
         run: terraform validate
