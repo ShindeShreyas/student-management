@@ -1,4 +1,6 @@
+
 name: cd-application
+
 on:
   workflow_run:
     workflows:
@@ -10,6 +12,7 @@ jobs:
   cd-application:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: aws-credentials-setup
         uses: aws-actions/configure-aws-credentials@v6.3.0
@@ -21,10 +24,20 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
 
-      - name: eks-cluster-access
-        run: aws eks update-kubeconfig --name student-cluster --region ap-south-1
+      - name: check-aws-and-eks
+        run: |
+          aws sts get-caller-identity
+          aws eks list-clusters --region ap-south-1
 
-      - name: kubernets-files-apply
-        run: kubectl apply -f k8s/
+      - name: eks-cluster-access
+        run: |
+          aws eks update-kubeconfig \
+            --name my-eks \
+            --region ap-south-1
+
+      - name: kubernetes-files-apply
+        run: |
+          kubectl apply -f k8s/
+
 
           
