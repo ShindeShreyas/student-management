@@ -3,7 +3,7 @@ name: cd-application
 on:
   workflow_run:
     workflows:
-      - ci
+      - ci-application
     types:
       - completed
 
@@ -23,11 +23,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Check AWS Account
+        run: |
+          aws sts get-caller-identity
+          aws eks list-clusters --region ap-south-1
+
       - name: EKS Cluster Access
-        run: aws eks update-kubeconfig --name my-eks --region ap-south-1
+        run: |
+          aws eks update-kubeconfig \
+            --name my-eks \
+            --region ap-south-1
+
+      - name: Check Kubernetes
+        run: |
+          kubectl get nodes
 
       - name: Kubernetes Files Apply
-        run: kubectl apply -f k8s/
+        run: |
+          kubectl apply -f k8s/
+
 
 
 
