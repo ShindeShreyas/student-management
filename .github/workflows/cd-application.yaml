@@ -33,7 +33,7 @@ jobs:
             --region ap-south-1
 
       - name: Verify Kubernetes access
-        run: |                               # bucket
+        run: |                               # bucket app
           kubectl get nodes
 
       - name: Deploy Kubernetes manifests
