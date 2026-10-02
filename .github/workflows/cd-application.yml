@@ -26,5 +26,5 @@ jobs:
 
       - name: kubernets-files-apply
         run: kubectl apply -f k8s/
-        
+
           
