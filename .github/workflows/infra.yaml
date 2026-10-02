@@ -1,36 +1,53 @@
 name: student-infra
+
 on:
   push:
     branches:
       - master
     paths:
-      - 'main.tf'
+      - '**/*.tf'
+
 jobs:
   student-infra:
     runs-on: ubuntu-latest
-    steps:
 
-      
-      - name: terraform-setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Terraform Setup
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: "1.14.6"
 
-      - name: aws-credentials-setup
-        uses:  aws-actions/configure-aws-credentials@v6.3.0
+      - name: AWS Credentials Setup
+        uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: checkout
-        uses: actions/checkout@v7
-        
-      - name: terraform-init
+      - name: Check AWS Account
+        run: |
+          aws sts get-caller-identity
+
+      - name: Terraform Init
         run: terraform init
 
-      - name: terraform-validate
+      - name: Terraform Validate
         run: terraform validate
 
-      - name: terraform-apply
-        run: terraform apply --auto-approve
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Verify EKS Cluster
+        run: |
+          aws eks describe-cluster \
+            --name my-eks \
+            --region ap-south-1 \
+            --query 'cluster.status' \
+            --output text
+
