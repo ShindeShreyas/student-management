@@ -47,7 +47,7 @@ jobs:
         run: |
           STATUS=$(curl -s \
             -u "$SONAR_TOKEN:" \
-            "$SONAR_HOST_URL/api/qualitygates/project_status?projectKey=student-management" \
+            "$SONAR_HOST_URL/api/qualitygates/project_status?projectKey=com.school:student-management" \
             | jq -r '.projectStatus.status')
           echo "SonarQube Quality Gate: $STATUS"
 
