@@ -41,7 +41,7 @@ jobs:
         run: terraform plan
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve   # bucket
 
       - name: Verify EKS Cluster
         run: |
@@ -49,5 +49,5 @@ jobs:
             --name eks-cluster \
             --region ap-south-1 \
             --query 'cluster.status' \
-            --output text
+            --output text             
 

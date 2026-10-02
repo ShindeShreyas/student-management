@@ -58,7 +58,7 @@ jobs:
         run: aws s3 cp target/*.war s3://shreyasbuilds.fun/new-student-artifact/student.war # bucket
 
       - name: docker-images-build
-        run: |
+        run: |                                 # bucket
           docker build -t student .
           docker images   
 
