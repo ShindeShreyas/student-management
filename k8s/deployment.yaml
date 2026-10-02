@@ -21,7 +21,7 @@ spec:
     spec: 
       containers: 
         - name: student-container
-          image: 963540391051.dkr.ecr.ap-south-1.amazonaws.com/student:40f0dc512a303e283e98c99d231459e66526635f
+          image: 963540391051.dkr.ecr.ap-south-1.amazonaws.com/student:c80867cc80b78a2e3aba2dfc4aab3821d87afcc7
           ports: 
             - containerPort: 8080
           imagePullPolicy: Always
