@@ -43,7 +43,7 @@ jobs:
       - name: sonarqube-quality-gate
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # or https://sonarcloud.io
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # or https://sonarcloud.io00
         run: |
           STATUS=$(curl -s \
             -u "$SONAR_TOKEN:" \
@@ -60,7 +60,7 @@ jobs:
       - name: docker-images-build
         run: |
           docker build -t student .
-          docker images
+          docker images   
 
       - name: push-to-ecr
         run: |
@@ -75,4 +75,4 @@ jobs:
           git config --global user.email "shindeshreyas0211@gmail.com"
           git add k8s/deployment.yaml
           git commit -m "image updated"
-          git push origin master
+          git push origin master 
