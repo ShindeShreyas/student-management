@@ -59,7 +59,7 @@ jobs:
 
       - name: docker-images-build
         run: |
-          docker images -t student .
+          docker build -t student .
           docker images
 
       - name: push-to-ecr
