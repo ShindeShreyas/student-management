@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - '**/*.tf'
+      - 'main.tf'
 
 jobs:
   student-infra:
